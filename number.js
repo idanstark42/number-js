@@ -44,42 +44,42 @@ var Number = function(my) {
     my.regex = function() {
         let phrases = [];
         for(var key in numbers)
-            phrases.push('{0},?'.format(key));
+            phrases.push(key + ',?');
         phrases.push('and');
-        let regex = '(({0}) ?)+'.format(phrases.join('|'));
+        let regex = '((' + phrases.join('|') + ') ?)+';
         return new RegExp(regex, 'g');
     }();
 
     function _words(str) {
-    	return str.split(' ').map(word => {
-	        if(word === 'and')  return undefined;
-	        if(word.endsWith(','))  word = word.replace(/,$/, '');
-	        if(word.endsWith('s'))  word = word.replace(/s$/, '');
-	        
-	        if(isFinite(word))
-	            return { val: Number(word), type: quantity };
-	        else if(numbers.hasOwnProperty(word))
-	            return numbers[word];
-	    }).filter(word => !!word);
+        return str.split(' ').map(word => {
+            if(word === 'and')  return undefined;
+            if(word.endsWith(','))  word = word.replace(/,$/, '');
+            if(word.endsWith('s'))  word = word.replace(/s$/, '');
+            
+            if(isFinite(word))
+                return { val: Number(word), type: quantity };
+            else if(numbers.hasOwnProperty(word))
+                return numbers[word];
+        }).filter(word => !!word);
     }
 
     function _number(words) {
-    	let i = 0, result = 0;
-	    while(i < words.length) {
-	        if(words[i].type !== quantity)
-	            throw Error('No quantity at word {0}'.format(i+1));
+        let i = 0, result = 0;
+        while(i < words.length) {
+            if(words[i].type !== quantity)
+                throw Error('No quantity at word ' + (i+1).toString());
 
-	        if(words.length > (i + 1) && words[i+1].type === magnitude)
-	            result += words[i++].val * words[i++].val;
-	        else
-	            result += words[i++].val;
-	    }
-	    return result;
+            if(words.length > (i + 1) && words[i+1].type === magnitude)
+                result += words[i++].val * words[i++].val;
+            else
+                result += words[i++].val;
+        }
+        return result;
     }
 
-	my.parseWord = function(str) {
-	    return _number(_words(str));
-	};
+    my.parseWord = function(str) {
+        return _number(_words(str));
+    };
 
     return my;
 
